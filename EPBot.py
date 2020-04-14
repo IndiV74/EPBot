@@ -3,8 +3,9 @@ import apiai, json
 import EPStatistics as es
 import random
 import time
+import datetime
 
-cpublic_messages_to_answer = 4
+cpublic_messages_to_answer = 9
 cbot_name = '@EPUUBot'
 bot = telebot.TeleBot('1010057424:AAF23brU8OJcRUkOnMKoLgwDmb-3aj21UPw')
 
@@ -66,7 +67,8 @@ def start_message(message):
     #определяем персональное ли это сообщение для бота (в тексте встречается имя бота; ответ на сообщение бота; приватный чат с ботом)
     to_bot = False
     if message.reply_to_message is not None:
-        to_bot = '@'+message.reply_to_message.from_user.username == cbot_name
+        if message.reply_to_message.from_user.username is not None:
+            to_bot = '@'+message.reply_to_message.from_user.username == cbot_name
     to_bot = (message.text.find(cbot_name) >= 0) | (message.chat.type == 'private') | to_bot
 
     if not to_bot:
@@ -103,12 +105,13 @@ with open('config.json', 'r', encoding='utf-8') as fconfig:  # открывае�
 # with open('AllianceMembers.json', 'r', encoding='utf-8') as fAllianceMembers:  # открываем файл на чтение
 #     allianceMembers = json.load(fAllianceMembers)  # загружаем из файла данные в словарь data
 
-
-msg_count = 0
-bot.delete_webhook()
 while True:
     try:
-        bot.polling(none_stop=True)
+        msg_count = 0
+        bot.delete_webhook()
+        time.sleep(5)
+        print(f'{str(datetime.datetime.now())}: bot.polling...')
+        bot.polling(none_stop=True, interval=0, timeout=5)
     except Exception as e:
-        print(e)
-        time.sleep(15)
+        print(f'{str(datetime.datetime.now())}: {e}')
+        time.sleep(60)

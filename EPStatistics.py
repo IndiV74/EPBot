@@ -17,6 +17,7 @@ def statSummary(data, typeObject, regExpMask, sort=cSortTotalPoint):
     # фильтруем ключи по маске
     keyList = list(filter(lambda x: bool(re.search(regExpMask, x)), keys))
     keyList.sort()
+    print(keyList)
 
     titanKilledCount = 0
     for objectDate in keyList:
