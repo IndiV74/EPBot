@@ -29,7 +29,7 @@ def start_message(message):
 
 @bot.message_handler(regexp=r'(titan|war)(total|avg)')
 def start_message(message):
-    print(message)
+    print(message.text)
     cmd = ''
     typeObject = ''
     try:
@@ -56,9 +56,9 @@ def start_message(message):
     bot.send_message(message.chat.id, res)
 
 
-@bot.message_handler(content_types=['sticker'])
-def sticker_id(message):
-    print(message)
+#@bot.message_handler(content_types=['sticker'])
+#def sticker_id(message):
+#    print(message)
 
 
 @bot.message_handler(content_types=['text'])
