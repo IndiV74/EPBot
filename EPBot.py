@@ -1,12 +1,21 @@
+from typing import Dict
+
 import telebot
 import apiai, json
 import EPStatistics as es
 import random
 import time
 import datetime
+from google.oauth2 import service_account
+from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
+from googleapiclient.discovery import build
+import pprint
+import io
+
 
 cpublic_messages_to_answer = 9
 cbot_name = '@EPUUBot'
+c_id_data_json = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
 bot = telebot.TeleBot('1010057424:AAF23brU8OJcRUkOnMKoLgwDmb-3aj21UPw')
 
 def get_random_message(aconfig, section_name):
@@ -29,7 +38,7 @@ def start_message(message):
 
 @bot.message_handler(regexp=r'(titan|war)(total|avg)')
 def start_message(message):
-    print(message)
+    print(message.text)
     cmd = ''
     typeObject = ''
     try:
@@ -54,12 +63,6 @@ def start_message(message):
         res = 'Что-то пошло не так... @IndiV! почини меня... пожалуйста 😜'
 
     bot.send_message(message.chat.id, res)
-
-
-@bot.message_handler(content_types=['sticker'])
-def sticker_id(message):
-    print(message)
-
 
 @bot.message_handler(content_types=['text'])
 def start_message(message):
@@ -93,17 +96,43 @@ def start_message(message):
             bot.send_message(message.chat.id, text=get_random_message(dconfig, 'nothing_to_say'), reply_to_message_id=reply_to_message_id)
     print(msg_count)
 
-# загружаем данные о титанах и войнах
-with open('data.json', "r", encoding='utf-8') as read_file:
-    data = json.load(read_file)
+# # загружаем данные о титанах и войнах
+# with open('data.json', "r", encoding='utf-8') as read_file:
+#     data = json.load(read_file)
 
 #загружаем config
 with open('config.json', 'r', encoding='utf-8') as fconfig:  # открываем файл на чтение
     dconfig = json.load(fconfig)
 
-# загружаем словарь бойцов из json
-# with open('AllianceMembers.json', 'r', encoding='utf-8') as fAllianceMembers:  # открываем файл на чтение
-#     allianceMembers = json.load(fAllianceMembers)  # загружаем из файла данные в словарь data
+pp = pprint.PrettyPrinter(indent=4)
+SCOPES = ['https://www.googleapis.com/auth/drive']
+SERVICE_ACCOUNT_FILE = 'epbot-274622-530f5ad65b26.json'
+credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+service = build('drive', 'v3', credentials=credentials)
+results = service.files().list(
+    pageSize=1000,
+    fields="nextPageToken, files(id, name, mimeType, parents, createdTime)",
+    q="name contains 'data.json'").execute()
+
+if len(results.get('files')) == 0:
+    print('Not found data.json. Bot stopped')
+    raise SystemExit(1)
+
+file_id = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
+request = service.files().get_media(fileId=file_id)
+filename = 'data.txt'
+fh = io.FileIO(filename, 'w')
+print('Loading data.json...')
+downloader = MediaIoBaseDownload(fh, request)
+done = False
+while done is False:
+    status, done = downloader.next_chunk()
+    print ("Download %d%%." % int(status.progress() * 100))
+
+# загружаем данные о титанах и войнах
+with open('data.txt', "r", encoding='utf-8') as read_file:
+    data = json.load(read_file)
 
 while True:
     try:
@@ -111,7 +140,7 @@ while True:
         bot.delete_webhook()
         time.sleep(5)
         print(f'{str(datetime.datetime.now())}: bot.polling...')
-        bot.polling(none_stop=True, interval=0, timeout=5)
+        bot.polling(none_stop=True, timeout=5)
     except Exception as e:
         print(f'{str(datetime.datetime.now())}: {e}')
-        time.sleep(58)
+        time.sleep(60)
