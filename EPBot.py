@@ -114,4 +114,4 @@ while True:
         bot.polling(none_stop=True, interval=0, timeout=5)
     except Exception as e:
         print(f'{str(datetime.datetime.now())}: {e}')
-        time.sleep(59)
+        time.sleep(60)
