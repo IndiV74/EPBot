@@ -64,6 +64,7 @@ def start_message(message):
 
     bot.send_message(message.chat.id, res)
 
+
 @bot.message_handler(content_types=['text'])
 def start_message(message):
     global msg_count
