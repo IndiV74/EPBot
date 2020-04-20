@@ -1,24 +1,68 @@
+from typing import Dict
+
 import telebot
 import apiai, json
 import EPStatistics as es
 import random
 import time
 import datetime
+from google.oauth2 import service_account
+from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
+from googleapiclient.discovery import build
+import io
+import os
+from boto.s3.connection import S3Connection
+import pprint
 
 cpublic_messages_to_answer = 9
 cbot_name = '@EPUUBot'
+c_id_data_json = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
+c_id_config_json = '1SW0R1o8uNX9FmtL6aMLgvB9TqTP--ygw'
 bot = telebot.TeleBot('1010057424:AAF23brU8OJcRUkOnMKoLgwDmb-3aj21UPw')
 
 def get_random_message(aconfig, section_name):
     random.seed()
     return aconfig[section_name][str(random.randint(1,len(aconfig[section_name])))]
 
+def load_dictonary_from_GoogleDrive(file_id, fileName):
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    try:
+        #пытаемся загрузить файл учетных данных Google Drive (для локального запуска)
+        with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
+            SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
+    except FileNotFoundError:
+        # загружаем учетные данные Google Drive из переменных окружения
+        SERVICE_ACCOUNT_INFO = S3Connection(os.environ['type'], os.environ['project_id'], os.environ['private_key_id'],
+                                            os.environ['private_key'], os.environ['client_email'],
+                                            os.environ['client_id'],
+                                            os.environ['auth_uri'], os.environ['token_uri'],
+                                            os.environ['auth_provider_x509_cert_url'],
+                                            os.environ['client_x509_cert_url'])
+
+    credentials = service_account.Credentials.from_service_account_info(
+        SERVICE_ACCOUNT_INFO, scopes=SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+
+    request = service.files().get_media(fileId=file_id)
+    fh = io.FileIO(fileName, 'w')
+    print(f'Loading {fileName}...')
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+        print ("Download %d%%." % int(status.progress() * 100))
+
+    # загружаем данные о титанах и войнах
+    with open(fileName, "r", encoding='utf-8') as read_file:
+        a_dict = json.load(read_file)
+    return a_dict
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
     # загружаем данные о титанах и войнах
-    global data
-    with open('data.json', "r", encoding='utf-8') as read_file:
-        data = json.load(read_file)
+    global data, dconfig
+    data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
+    dconfig = load_dictonary_from_GoogleDrive(c_id_config_json, 'config.json')
 
     bot.send_message(message.chat.id, 'Данные перезагружены, можно запрашивать статистику командами\n'
                                       '/titantotal <маска даты [YYYY-MM-DD]> - урон по титану (сортировка по суммарному урону)\n'
@@ -56,11 +100,6 @@ def start_message(message):
     bot.send_message(message.chat.id, res)
 
 
-#@bot.message_handler(content_types=['sticker'])
-#def sticker_id(message):
-#    print(message)
-
-
 @bot.message_handler(content_types=['text'])
 def start_message(message):
     global msg_count
@@ -93,17 +132,12 @@ def start_message(message):
             bot.send_message(message.chat.id, text=get_random_message(dconfig, 'nothing_to_say'), reply_to_message_id=reply_to_message_id)
     print(msg_count)
 
-# загружаем данные о титанах и войнах
-with open('data.json', "r", encoding='utf-8') as read_file:
-    data = json.load(read_file)
 
-#загружаем config
-with open('config.json', 'r', encoding='utf-8') as fconfig:  # открываем файл на чтение
-    dconfig = json.load(fconfig)
+#pp = pprint.PrettyPrinter(indent=4)
 
-# загружаем словарь бойцов из json
-# with open('AllianceMembers.json', 'r', encoding='utf-8') as fAllianceMembers:  # открываем файл на чтение
-#     allianceMembers = json.load(fAllianceMembers)  # загружаем из файла данные в словарь data
+data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
+dconfig = load_dictonary_from_GoogleDrive(c_id_config_json, 'config.json')
+#pp.pprint(dconfig)
 
 while True:
     try:
@@ -111,7 +145,7 @@ while True:
         bot.delete_webhook()
         time.sleep(5)
         print(f'{str(datetime.datetime.now())}: bot.polling...')
-        bot.polling(none_stop=True, interval=0, timeout=5)
+        bot.polling(none_stop=True, timeout=5)
     except Exception as e:
         print(f'{str(datetime.datetime.now())}: {e}')
-        time.sleep(58)
+        time.sleep(60)
