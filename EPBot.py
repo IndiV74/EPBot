@@ -9,25 +9,46 @@ import datetime
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
 from googleapiclient.discovery import build
-import pprint
 import io
-
+import pprint
 
 cpublic_messages_to_answer = 9
 cbot_name = '@EPUUBot'
 c_id_data_json = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
+c_id_config_json = '1SW0R1o8uNX9FmtL6aMLgvB9TqTP--ygw'
 bot = telebot.TeleBot('1010057424:AAF23brU8OJcRUkOnMKoLgwDmb-3aj21UPw')
 
 def get_random_message(aconfig, section_name):
     random.seed()
     return aconfig[section_name][str(random.randint(1,len(aconfig[section_name])))]
 
+def load_dictonary_from_GoogleDrive(file_id, fileName):
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+    SERVICE_ACCOUNT_FILE = 'epbot-274622-530f5ad65b26.json'
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build('drive', 'v3', credentials=credentials)
+
+    request = service.files().get_media(fileId=file_id)
+    fh = io.FileIO(fileName, 'w')
+    print(f'Loading {fileName}...')
+    downloader = MediaIoBaseDownload(fh, request)
+    done = False
+    while done is False:
+        status, done = downloader.next_chunk()
+        print ("Download %d%%." % int(status.progress() * 100))
+
+    # загружаем данные о титанах и войнах
+    with open(fileName, "r", encoding='utf-8') as read_file:
+        a_dict = json.load(read_file)
+    return a_dict
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
     # загружаем данные о титанах и войнах
-    global data
-    with open('data.json', "r", encoding='utf-8') as read_file:
-        data = json.load(read_file)
+    global data, dconfig
+    data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
+    dconfig = load_dictonary_from_GoogleDrive(c_id_config_json, 'config.json')
 
     bot.send_message(message.chat.id, 'Данные перезагружены, можно запрашивать статистику командами\n'
                                       '/titantotal <маска даты [YYYY-MM-DD]> - урон по титану (сортировка по суммарному урону)\n'
@@ -97,43 +118,12 @@ def start_message(message):
             bot.send_message(message.chat.id, text=get_random_message(dconfig, 'nothing_to_say'), reply_to_message_id=reply_to_message_id)
     print(msg_count)
 
-# # загружаем данные о титанах и войнах
-# with open('data.json', "r", encoding='utf-8') as read_file:
-#     data = json.load(read_file)
 
-#загружаем config
-with open('config.json', 'r', encoding='utf-8') as fconfig:  # открываем файл на чтение
-    dconfig = json.load(fconfig)
+#pp = pprint.PrettyPrinter(indent=4)
 
-pp = pprint.PrettyPrinter(indent=4)
-SCOPES = ['https://www.googleapis.com/auth/drive']
-SERVICE_ACCOUNT_FILE = 'epbot-274622-530f5ad65b26.json'
-credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('drive', 'v3', credentials=credentials)
-results = service.files().list(
-    pageSize=1000,
-    fields="nextPageToken, files(id, name, mimeType, parents, createdTime)",
-    q="name contains 'data.json'").execute()
-
-if len(results.get('files')) == 0:
-    print('Not found data.json. Bot stopped')
-    raise SystemExit(1)
-
-file_id = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
-request = service.files().get_media(fileId=file_id)
-filename = 'data.txt'
-fh = io.FileIO(filename, 'w')
-print('Loading data.json...')
-downloader = MediaIoBaseDownload(fh, request)
-done = False
-while done is False:
-    status, done = downloader.next_chunk()
-    print ("Download %d%%." % int(status.progress() * 100))
-
-# загружаем данные о титанах и войнах
-with open('data.txt', "r", encoding='utf-8') as read_file:
-    data = json.load(read_file)
+data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
+dconfig = load_dictonary_from_GoogleDrive(c_id_config_json, 'config.json')
+#pp.pprint(dconfig)
 
 while True:
     try:
