@@ -57,11 +57,12 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
             SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
 
-        print(SERVICE_ACCOUNT_INFO)
         print(SERVICE_ACCOUNT_INFO['private_key'])
-        SERVICE_ACCOUNT_INFO['private_key'] = SERVICE_ACCOUNT_INFO['private_key'].replace('\\\\', '\\')
+        SERVICE_ACCOUNT_INFO['private_key'] = SERVICE_ACCOUNT_INFO['private_key'].replace('\\\\n', '\\n')
         print(SERVICE_ACCOUNT_INFO['private_key'])
 
+    print(SERVICE_ACCOUNT_INFO)
+    print(SERVICE_ACCOUNT_INFO['private_key'])
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO, scopes=SCOPES)
     service = build('drive', 'v3', credentials=credentials)
