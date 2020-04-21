@@ -37,7 +37,7 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         SERVICE_ACCOUNT_INFO['type'] = os.environ['type']
         SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
         SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
-        SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key'].encode("utf-8")
+        SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key']
         SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
         SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
         SERVICE_ACCOUNT_INFO['auth_uri'] = os.environ['auth_uri']
