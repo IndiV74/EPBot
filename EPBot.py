@@ -52,7 +52,7 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         SERVICE_ACCOUNT_INFO['client_x509_cert_url'] = os.environ['client_x509_cert_url']
 
         with open('epbot-274622-530f5ad65b26.json', 'w', encoding='utf-8') as json_file:
-            json.dump(SERVICE_ACCOUNT_INFO, SERVICE_ACCOUNT_INFO, ensure_ascii=False)
+            json.dump(SERVICE_ACCOUNT_INFO, json_file, ensure_ascii=False)
 
         with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
             SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
