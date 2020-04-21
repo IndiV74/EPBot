@@ -44,7 +44,7 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
         SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
 
-        private_key = os.getenvb(b"private_key")
+        private_key = (os.getenvb(b"private_key"))
         # private_key = private_key.replace('\\\\n','|')
         # print(private_key)
         # private_key = private_key.replace('|', r'\n')
