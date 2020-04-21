@@ -44,25 +44,28 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
         SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
         SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key']
+        private_key = os.environ['private_key']
+        print(private_key)
         SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
         SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
         SERVICE_ACCOUNT_INFO['auth_uri'] = os.environ['auth_uri']
         SERVICE_ACCOUNT_INFO['token_uri'] = os.environ['token_uri']
         SERVICE_ACCOUNT_INFO['auth_provider_x509_cert_url'] = os.environ['auth_provider_x509_cert_url']
         SERVICE_ACCOUNT_INFO['client_x509_cert_url'] = os.environ['client_x509_cert_url']
+        print(SERVICE_ACCOUNT_INFO)
 
-        with open('epbot-274622-530f5ad65b26.json', 'w', encoding='utf-8') as json_file:
-            json.dump(SERVICE_ACCOUNT_INFO, json_file, ensure_ascii=False)
-
-        with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
-            SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
-
-        print(SERVICE_ACCOUNT_INFO['private_key'])
-        SERVICE_ACCOUNT_INFO['private_key'] = SERVICE_ACCOUNT_INFO['private_key'].replace('\\\n', '\n')
-        print(SERVICE_ACCOUNT_INFO['private_key'])
-
-    print(SERVICE_ACCOUNT_INFO)
-    print(SERVICE_ACCOUNT_INFO['private_key'])
+    #     with open('epbot-274622-530f5ad65b26.json', 'w', encoding='utf-8') as json_file:
+    #         json.dump(SERVICE_ACCOUNT_INFO, json_file, ensure_ascii=False)
+    #
+    #     with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
+    #         SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
+    #
+    #     print(SERVICE_ACCOUNT_INFO['private_key'])
+    #     SERVICE_ACCOUNT_INFO['private_key'] = SERVICE_ACCOUNT_INFO['private_key'].replace('\\\n', '\n')
+    #     print(SERVICE_ACCOUNT_INFO['private_key'])
+    #
+    # print(SERVICE_ACCOUNT_INFO)
+    # print(SERVICE_ACCOUNT_INFO['private_key'])
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO, scopes=SCOPES)
     service = build('drive', 'v3', credentials=credentials)
