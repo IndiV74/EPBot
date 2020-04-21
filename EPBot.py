@@ -32,12 +32,23 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
             SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
     except FileNotFoundError:
         # загружаем учетные данные Google Drive из переменных окружения
-        SERVICE_ACCOUNT_INFO = S3Connection(os.environ['type'], os.environ['project_id'], os.environ['private_key_id'],
-                                            os.environ['private_key'], os.environ['client_email'],
-                                            os.environ['client_id'],
-                                            os.environ['auth_uri'], os.environ['token_uri'],
-                                            os.environ['auth_provider_x509_cert_url'],
-                                            os.environ['client_x509_cert_url'])
+        # SERVICE_ACCOUNT_INFO = S3Connection(os.environ['type'], os.environ['project_id'], os.environ['private_key_id'],
+        #                                     os.environ['private_key'], os.environ['client_email'],
+        #                                     os.environ['client_id'],
+        #                                     os.environ['auth_uri'], os.environ['token_uri'],
+        #                                     os.environ['auth_provider_x509_cert_url'],
+        #                                     os.environ['client_x509_cert_url'])
+        SERVICE_ACCOUNT_INFO['type'] = os.environ['type']
+        SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
+        SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
+        SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key']
+        SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
+        SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
+        SERVICE_ACCOUNT_INFO['auth_uri'] = os.environ['auth_uri']
+        SERVICE_ACCOUNT_INFO['token_uri'] = os.environ['token_uri']
+        SERVICE_ACCOUNT_INFO['auth_provider_x509_cert_url'] = os.environ['auth_provider_x509_cert_url']
+        SERVICE_ACCOUNT_INFO['client_x509_cert_url'] = os.environ['client_x509_cert_url']
+
         print(SERVICE_ACCOUNT_INFO)
 
     credentials = service_account.Credentials.from_service_account_info(
