@@ -69,7 +69,11 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
     #
     # print(SERVICE_ACCOUNT_INFO)
     # print(SERVICE_ACCOUNT_INFO['private_key'])
+<<<<<<< HEAD
     #print(SERVICE_ACCOUNT_INFO)
+=======
+    print(SERVICE_ACCOUNT_INFO)
+>>>>>>> 240e8abe2375b67b94b9139ed7353ecb98405686
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO, scopes=SCOPES)
     service = build('drive', 'v3', credentials=credentials)
