@@ -45,6 +45,9 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
         SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key']
         private_key = os.environ['private_key']
+        private_key = private_key.replace('\\\\n','|')
+        print(private_key)
+        private_key = private_key.replace('|', r'\n')
         print(private_key)
         SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
         SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
@@ -66,7 +69,7 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
     #
     # print(SERVICE_ACCOUNT_INFO)
     # print(SERVICE_ACCOUNT_INFO['private_key'])
-    print(SERVICE_ACCOUNT_INFO)
+    #print(SERVICE_ACCOUNT_INFO)
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO, scopes=SCOPES)
     service = build('drive', 'v3', credentials=credentials)
