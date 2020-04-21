@@ -38,6 +38,7 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
                                             os.environ['auth_uri'], os.environ['token_uri'],
                                             os.environ['auth_provider_x509_cert_url'],
                                             os.environ['client_x509_cert_url'])
+        print(SERVICE_ACCOUNT_INFO)
 
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO, scopes=SCOPES)
