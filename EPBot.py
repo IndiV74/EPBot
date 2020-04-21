@@ -29,27 +29,15 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
     SERVICE_ACCOUNT_INFO = dict()
     try:
         #пытаемся загрузить файл учетных данных Google Drive (для локального запуска)
-        with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
+        with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:
             SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
             print(SERVICE_ACCOUNT_INFO)
     except FileNotFoundError:
-        # загружаем учетные данные Google Drive из переменных окружения
-        # SERVICE_ACCOUNT_INFO = S3Connection(os.environ['type'], os.environ['project_id'], os.environ['private_key_id'],
-        #                                     os.environ['private_key'], os.environ['client_email'],
-        #                                     os.environ['client_id'],
-        #                                     os.environ['auth_uri'], os.environ['token_uri'],
-        #                                     os.environ['auth_provider_x509_cert_url'],
-        #                                     os.environ['client_x509_cert_url'])
+        # загружаем учетные данные Google Drive из heroku Config Vars
         SERVICE_ACCOUNT_INFO['type'] = os.environ['type']
         SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
         SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
-
-        private_key = (os.getenvb(b"private_key"))
-        # private_key = private_key.replace('\\\\n','|')
-        # print(private_key)
-        # private_key = private_key.replace('|', r'\n')
-        # print(private_key)
-        SERVICE_ACCOUNT_INFO['private_key'] = private_key
+        SERVICE_ACCOUNT_INFO['private_key'] = (os.getenv(r"private_key"))
         SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
         SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
         SERVICE_ACCOUNT_INFO['auth_uri'] = os.environ['auth_uri']
@@ -58,16 +46,6 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         SERVICE_ACCOUNT_INFO['client_x509_cert_url'] = os.environ['client_x509_cert_url']
 
 
-    #     with open('epbot-274622-530f5ad65b26.json', 'w', encoding='utf-8') as json_file:
-    #         json.dump(SERVICE_ACCOUNT_INFO, json_file, ensure_ascii=False)
-    #
-    #     with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:  # открываем файл на чтение
-    #         SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
-    #
-    #     print(SERVICE_ACCOUNT_INFO['private_key'])
-    #     SERVICE_ACCOUNT_INFO['private_key'] = SERVICE_ACCOUNT_INFO['private_key'].replace('\\\n', '\n')
-    #     print(SERVICE_ACCOUNT_INFO['private_key'])
-    #
     print(SERVICE_ACCOUNT_INFO)
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO, scopes=SCOPES)
