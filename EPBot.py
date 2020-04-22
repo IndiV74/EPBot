@@ -33,18 +33,21 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
             SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
             print(SERVICE_ACCOUNT_INFO)
     except FileNotFoundError:
+        pass
         # загружаем учетные данные Google Drive из heroku Config Vars
-        SERVICE_ACCOUNT_INFO['type'] = os.environ['type']
-        SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
-        SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
-        SERVICE_ACCOUNT_INFO['private_key'] = r'-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDGgQr+sKPPVcPf\n7lKjBPzaHCT+BxT3Uk9LGltbgowhq6a0xRukZ5m1exfsiVMwcD8tTfxKlrE9hhet\niWSaecFOy003Gl8XWaGvERs1NB62G1glfQgxsAaO7UL0BOOPExbK+R5ZAHrGvp26\ngQaZ5td3J7QZAH+uAjZr+tVoj9hYdwrX23oXIY/zry/WFCU7NhQDwYqwvovuZzsu\nPJRPV6I+9qUeIs46NhJCa0j8GrbXZIYIM+JPOX4pXcf27nzT0NYns6zm3krVGRM4\nvmfWVQKkbKb8ofbbqmrJp49U1KOmU7iwHq9qyt6A0G4SNA4+6dDJb7+bdHrUDOLU\ngC6qNMHpAgMBAAECggEAAM94kFD0FBOxocg2pqhTcSJAU/VFCOTTkS+5nIiOb5bY\n116Y6wtBsUjUfCb9eBJohRP9uhZSu5uvSzMP4Rw2jk6jxa2paFE/bsPXLrXbbIPG\nkLHj0/hJZXogGMj+mPAxQ20EoblBb8vJ7wWQ+ImofDnCP9Fti0tOEFlLnXA9c8Sj\ntqHyLXlWCQZ4Llfi4X2QsfFA1ERrE2UlhiAXRcDgiE262zD5tzZu1bpRTPZeTKX4\nD8AsyebGr0MUkjjS7NBSRNgm+9fmcYxqQfVEPNfz57J8bzfTqKTYOKN6FbxDzoy/\nL2s5+8213bu1HdyRNczeeRsRqszohzdbpocT7TF6vQKBgQD4KAOHFS1O81gycH3/\nCvaA4FkZg8L7DKXa4Lbf9OiN9IZLkX57o0FB/pwJKpeCFScQIjNJB9/f6PFxlDjf\ncIGP7TwX95SlR1UNEAMRk68tnwnFmLgLaM7scr9xnMvCGm2tU2nhFjqVK+DKuq3V\nwjFAVEHnFOCuCiP+Z/IFECNJXQKBgQDMx0Mi5pYRpMS7xs7MC1WC8/eRDjdnvtwi\nZYFo6u+1ShRCqZI2GSFB91cEffXEeZ31VFkEthPB1Tq5NWKa7fUFI+gDk2Wj6CQw\nxQJinVu6QxfShG7an+Mq/Iq/g3gmzn6kHLWNOEMavk44AmRWy6pSKWFhZyCm5if+\nCjmTemk1/QKBgB64TV9+lqJMa6Gq3V4iTEu9+im3bv7HHQ0QfnMRDWztVWardz31\nAtIZo9VaqXDYD4LmyPSEfglo++K0l6nJcrCPjL3mz0b6oqPAVLDrWGdMZdhJRJdc\n/Si2N87nuy2nOeaYCeZsawomaWiPXY+1v4UYKSRjKEFDThtjYMmRqtydAoGABlVn\nay3smFEbUJ9+h+sV0v4OuyrQZeIOVvYCwab6kQXgiItMHWY7lBm9VEM9Fb2ZOBxK\nwI2NIOKidVYEXbxcZrNMmse1ThOBAw0k3L33N1SZ6QX1k8d8NDkpZXEAh1q9qf/F\nUb/au3oFW1AfoFueQfpLq8KPzPmzZPUWAMy5clUCgYA+8AP8ALyKIqAZmdI2+jH1\nkjBx6IEkhHy6dyd7WQLBnRypbnBvgooZ9a46ivwxfb580LVK3suWPHuNIIqZzS97\nYPoPTrdlwlQ+GYGPIEMI/uJGkhwBKuZ+pLEFz4F++s0UKcdVRgdZac6v+GztJ/aP\nxI8K0mdk9s7jE3QpYxYLzw==\n-----END PRIVATE KEY-----\n'
-        # SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key']
-        SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
-        SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
-        SERVICE_ACCOUNT_INFO['auth_uri'] = os.environ['auth_uri']
-        SERVICE_ACCOUNT_INFO['token_uri'] = os.environ['token_uri']
-        SERVICE_ACCOUNT_INFO['auth_provider_x509_cert_url'] = os.environ['auth_provider_x509_cert_url']
-        SERVICE_ACCOUNT_INFO['client_x509_cert_url'] = os.environ['client_x509_cert_url']
+        GC = os.getenv('GOOGLE_CREDENTIALS')
+        SERVICE_ACCOUNT_INFO= json.loads(GC)
+        # SERVICE_ACCOUNT_INFO['type'] = os.environ['type']
+        # SERVICE_ACCOUNT_INFO['project_id'] = os.environ['project_id']
+        # SERVICE_ACCOUNT_INFO['private_key_id'] = os.environ['private_key_id']
+        # SERVICE_ACCOUNT_INFO['private_key'] = r'-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDGgQr+sKPPVcPf\n7lKjBPzaHCT+BxT3Uk9LGltbgowhq6a0xRukZ5m1exfsiVMwcD8tTfxKlrE9hhet\niWSaecFOy003Gl8XWaGvERs1NB62G1glfQgxsAaO7UL0BOOPExbK+R5ZAHrGvp26\ngQaZ5td3J7QZAH+uAjZr+tVoj9hYdwrX23oXIY/zry/WFCU7NhQDwYqwvovuZzsu\nPJRPV6I+9qUeIs46NhJCa0j8GrbXZIYIM+JPOX4pXcf27nzT0NYns6zm3krVGRM4\nvmfWVQKkbKb8ofbbqmrJp49U1KOmU7iwHq9qyt6A0G4SNA4+6dDJb7+bdHrUDOLU\ngC6qNMHpAgMBAAECggEAAM94kFD0FBOxocg2pqhTcSJAU/VFCOTTkS+5nIiOb5bY\n116Y6wtBsUjUfCb9eBJohRP9uhZSu5uvSzMP4Rw2jk6jxa2paFE/bsPXLrXbbIPG\nkLHj0/hJZXogGMj+mPAxQ20EoblBb8vJ7wWQ+ImofDnCP9Fti0tOEFlLnXA9c8Sj\ntqHyLXlWCQZ4Llfi4X2QsfFA1ERrE2UlhiAXRcDgiE262zD5tzZu1bpRTPZeTKX4\nD8AsyebGr0MUkjjS7NBSRNgm+9fmcYxqQfVEPNfz57J8bzfTqKTYOKN6FbxDzoy/\nL2s5+8213bu1HdyRNczeeRsRqszohzdbpocT7TF6vQKBgQD4KAOHFS1O81gycH3/\nCvaA4FkZg8L7DKXa4Lbf9OiN9IZLkX57o0FB/pwJKpeCFScQIjNJB9/f6PFxlDjf\ncIGP7TwX95SlR1UNEAMRk68tnwnFmLgLaM7scr9xnMvCGm2tU2nhFjqVK+DKuq3V\nwjFAVEHnFOCuCiP+Z/IFECNJXQKBgQDMx0Mi5pYRpMS7xs7MC1WC8/eRDjdnvtwi\nZYFo6u+1ShRCqZI2GSFB91cEffXEeZ31VFkEthPB1Tq5NWKa7fUFI+gDk2Wj6CQw\nxQJinVu6QxfShG7an+Mq/Iq/g3gmzn6kHLWNOEMavk44AmRWy6pSKWFhZyCm5if+\nCjmTemk1/QKBgB64TV9+lqJMa6Gq3V4iTEu9+im3bv7HHQ0QfnMRDWztVWardz31\nAtIZo9VaqXDYD4LmyPSEfglo++K0l6nJcrCPjL3mz0b6oqPAVLDrWGdMZdhJRJdc\n/Si2N87nuy2nOeaYCeZsawomaWiPXY+1v4UYKSRjKEFDThtjYMmRqtydAoGABlVn\nay3smFEbUJ9+h+sV0v4OuyrQZeIOVvYCwab6kQXgiItMHWY7lBm9VEM9Fb2ZOBxK\nwI2NIOKidVYEXbxcZrNMmse1ThOBAw0k3L33N1SZ6QX1k8d8NDkpZXEAh1q9qf/F\nUb/au3oFW1AfoFueQfpLq8KPzPmzZPUWAMy5clUCgYA+8AP8ALyKIqAZmdI2+jH1\nkjBx6IEkhHy6dyd7WQLBnRypbnBvgooZ9a46ivwxfb580LVK3suWPHuNIIqZzS97\nYPoPTrdlwlQ+GYGPIEMI/uJGkhwBKuZ+pLEFz4F++s0UKcdVRgdZac6v+GztJ/aP\nxI8K0mdk9s7jE3QpYxYLzw==\n-----END PRIVATE KEY-----\n'
+        # # SERVICE_ACCOUNT_INFO['private_key'] = os.environ['private_key']
+        # SERVICE_ACCOUNT_INFO['client_email'] = os.environ['client_email']
+        # SERVICE_ACCOUNT_INFO['client_id'] = os.environ['client_id']
+        # SERVICE_ACCOUNT_INFO['auth_uri'] = os.environ['auth_uri']
+        # SERVICE_ACCOUNT_INFO['token_uri'] = os.environ['token_uri']
+        # SERVICE_ACCOUNT_INFO['auth_provider_x509_cert_url'] = os.environ['auth_provider_x509_cert_url']
+        # SERVICE_ACCOUNT_INFO['client_x509_cert_url'] = os.environ['client_x509_cert_url']
 
     print(SERVICE_ACCOUNT_INFO)
     credentials = service_account.Credentials.from_service_account_info(
@@ -142,13 +145,18 @@ def start_message(message):
 
 
 # pp = pprint.PrettyPrinter(indent=4)
-#
+
 # d = {
 #     'private_key_id': '530f5ad65b2622cb11904ab12b0a2c618bcaacad',
 #     'private_key': '-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDGgQr+sKPPVcPf\\n',
 #     }
 #
-# private_key = d['private_key'].replace('\\\\','\\').replace('\\\\','\\')
+# private_key = d['private_key']
+# print(private_key)
+# private_key = "\n".join(filter(bool, private_key.splitlines()))
+# print(private_key)
+# print(private_key[1])
+# private_key = private_key.replace('\\\\',"\\")
 # print(f'd={d}')
 # print(f"d[private_key]={d['private_key']}")
 # print(f"private_key={private_key}")
