@@ -11,7 +11,7 @@ import io
 import os
 #import pprint
 
-cpublic_messages_to_answer = 9
+cpublic_messages_to_response = 9
 cbot_name = '@EPUUBot'
 c_id_data_json = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
 c_id_config_json = '1SW0R1o8uNX9FmtL6aMLgvB9TqTP--ygw'
@@ -108,31 +108,27 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def start_message(message):
     global msg_count
+    # получаем ответ бота в любом случае, даже если не будем отвечать на сообщение (нужно для дальнейшего анализа)
+    bot_response, null_response = get_bot_response(message)
     #определяем персональное ли это сообщение для бота (в тексте встречается имя бота; ответ на сообщение бота; приватный чат с ботом)
     to_bot = False
-    bot_response, null_response = get_bot_response(message)
     if message.reply_to_message is not None:
         if message.reply_to_message.from_user.username is not None:
             to_bot = '@'+message.reply_to_message.from_user.username == cbot_name
     to_bot = (message.text.find(cbot_name) >= 0) | (message.chat.type == 'private') | to_bot
 
-    if not to_bot:
-        msg_count += 1
-    # if (msg_count >= cpublic_messages_to_answer) | to_bot:
-    #     request = apiai.ApiAI('1768a604bffd462292b221630bd7d66b').text_request()
-    #     request.lang = 'ru'
-    #     request.session_id = 'EPUUBot'
-    #     request.query = message.text.replace(cbot_name,'')
-    #     responseJson = json.loads(request.getresponse().read().decode('utf-8'))
-    #     response = responseJson['result']['fulfillment']['speech']
-
-        reply_to_message_id = None #по умолчанию не отвечаем на сообщение
-        if message.chat.type != 'private':
-            reply_to_message_id = message.message_id  #отвечаем на сообщение если чат не приватный
-
+    #если чат не приватный, то запоминаем id сообщения на которое будем отвечать
+    reply_to_message_id = None if message.chat.type == 'private' else message.message_id
+    if to_bot:
         bot.send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
-        if not null_response and not to_bot:
-                msg_count = 0
+    else:
+        msg_count += 1
+        # отвечаем на сообщение если превышен лимит ожидания и у бота нашелся ответ
+        if msg_count >= cpublic_messages_to_response and not null_response:
+            bot.send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
+            if not null_response and not to_bot:
+                    msg_count = 0
+
     print(msg_count)
 
 data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
