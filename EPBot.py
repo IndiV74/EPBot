@@ -3,7 +3,6 @@ import apiai, json
 import EPStatistics as es
 import random
 import time
-import datetime
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
 from googleapiclient.discovery import build
@@ -17,9 +16,10 @@ c_id_data_json = '1DJ3-_pZBpagkBUmwkXvmRQdudeLoCN13'
 c_id_config_json = '1SW0R1o8uNX9FmtL6aMLgvB9TqTP--ygw'
 bot = telebot.TeleBot('1010057424:AAF23brU8OJcRUkOnMKoLgwDmb-3aj21UPw')
 
-def get_random_message(aconfig, section_name):
+def get_random_message(section_name):
+    global dconfig
     random.seed()
-    return aconfig[section_name][str(random.randint(1,len(aconfig[section_name])))]
+    return dconfig[section_name][str(random.randint(1,len(dconfig[section_name])))]
 
 def load_dictonary_from_GoogleDrive(file_id, fileName):
     SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -27,7 +27,6 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
         #пытаемся загрузить файл учетных данных Google Drive (для локального запуска)
         with open('epbot-274622-530f5ad65b26.json', 'r', encoding='utf-8') as fSERVICE_ACCOUNT_INFO:
             SERVICE_ACCOUNT_INFO = json.load(fSERVICE_ACCOUNT_INFO)
-            print(SERVICE_ACCOUNT_INFO)
     except FileNotFoundError:
         # загружаем учетные данные Google Drive из heroku Config Vars
         SERVICE_ACCOUNT_INFO = json.loads(os.getenv('GOOGLE_CREDENTIALS'))
@@ -49,6 +48,18 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
     with open(fileName, "r", encoding='utf-8') as read_file:
         a_dict = json.load(read_file)
     return a_dict
+
+def get_bot_response(message):
+    request = apiai.ApiAI('1768a604bffd462292b221630bd7d66b').text_request()
+    request.lang = 'ru'
+    request.session_id = 'EPUUBot'
+    request.query = message.text.replace(cbot_name, '')
+    responseJson = json.loads(request.getresponse().read().decode('utf-8'))
+    response = responseJson['result']['fulfillment']['speech']
+    # признак того, что бот не нашел ответа (нужен для счетчика обработанных сообщений)
+    null_response = False if response else True
+    return (response if response else get_random_message('nothing_to_say')), null_response
+
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -98,6 +109,7 @@ def start_message(message):
     global msg_count
     #определяем персональное ли это сообщение для бота (в тексте встречается имя бота; ответ на сообщение бота; приватный чат с ботом)
     to_bot = False
+    bot_response, null_response = get_bot_response(message)
     if message.reply_to_message is not None:
         if message.reply_to_message.from_user.username is not None:
             to_bot = '@'+message.reply_to_message.from_user.username == cbot_name
@@ -105,24 +117,21 @@ def start_message(message):
 
     if not to_bot:
         msg_count += 1
-    if (msg_count >= cpublic_messages_to_answer) | to_bot:
-        request = apiai.ApiAI('1768a604bffd462292b221630bd7d66b').text_request()
-        request.lang = 'ru'
-        request.session_id = 'EPUUBot'
-        request.query = message.text.replace(cbot_name,'')
-        responseJson = json.loads(request.getresponse().read().decode('utf-8'))
-        response = responseJson['result']['fulfillment']['speech']
+    # if (msg_count >= cpublic_messages_to_answer) | to_bot:
+    #     request = apiai.ApiAI('1768a604bffd462292b221630bd7d66b').text_request()
+    #     request.lang = 'ru'
+    #     request.session_id = 'EPUUBot'
+    #     request.query = message.text.replace(cbot_name,'')
+    #     responseJson = json.loads(request.getresponse().read().decode('utf-8'))
+    #     response = responseJson['result']['fulfillment']['speech']
 
         reply_to_message_id = None #по умолчанию не отвечаем на сообщение
         if message.chat.type != 'private':
             reply_to_message_id = message.message_id  #отвечаем на сообщение если чат не приватный
 
-        if response:
-            bot.send_message(message.chat.id, text=response, reply_to_message_id=reply_to_message_id)
-            if not to_bot:
+        bot.send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
+        if not null_response and not to_bot:
                 msg_count = 0
-        elif to_bot:
-            bot.send_message(message.chat.id, text=get_random_message(dconfig, 'nothing_to_say'), reply_to_message_id=reply_to_message_id)
     print(msg_count)
 
 data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
