@@ -54,9 +54,14 @@ def get_bot_response(message):
     request = apiai.ApiAI('1768a604bffd462292b221630bd7d66b').text_request()
     request.lang = 'ru'
     request.session_id = 'EPUUBot'
-    request.query = message.text.replace(cbot_name, '')
+    request.query = message.text.replace(cbot_name, '')[0:255]
     responseJson = json.loads(request.getresponse().read().decode('utf-8'))
-    response = responseJson['result']['fulfillment']['speech']
+    # если успешно
+    if responseJson['status']['code'] == 200:
+        response = responseJson['result']['fulfillment']['speech']
+    else:
+        print(responseJson['status'])
+        response = None
     # признак того, что бот не нашел ответа (нужен для счетчика обработанных сообщений)
     null_response = False if response else True
     return (response if response else get_random_message('nothing_to_say')), null_response
