@@ -83,7 +83,7 @@ def start_message(message):
 
 @bot.message_handler(regexp=r'(titan|war)(total|avg)')
 def start_message(message):
-    print(message.text)
+    print(f'{message.from_user.first_name} ({message.from_user.username}): {message.text}')
     cmd = ''
     typeObject = ''
     try:
@@ -134,7 +134,7 @@ def start_message(message):
             if not null_response and not to_bot:
                     msg_count = 0
 
-    print(msg_count)
+    print(f'{message.from_user.first_name} ({message.from_user.username}): {msg_count}')
 
 data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
 dconfig = load_dictonary_from_GoogleDrive(c_id_config_json, 'config.json')
