@@ -1,5 +1,4 @@
 apiai==1.2.3
-boto==2.49.0
 pyTelegramBotAPI==3.6.7
 requests==2.23.0
 google-api-core==1.17.0

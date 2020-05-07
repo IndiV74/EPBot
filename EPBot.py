@@ -9,6 +9,8 @@ from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
 from googleapiclient.discovery import build
 import io
 import os
+import re
+from langdetect import detect
 #import pprint
 
 cpublic_messages_to_response = 9
@@ -52,6 +54,10 @@ def load_dictonary_from_GoogleDrive(file_id, fileName):
 
 def get_bot_response(message):
     request = apiai.ApiAI('1768a604bffd462292b221630bd7d66b').text_request()
+    # try:
+    #     request.lang = 'uk' if detect(message.text) == 'uk' else 'ru'
+    # except:
+    #     request.lang = 'ru'
     request.lang = 'ru'
     request.session_id = 'EPUUBot'
     request.query = message.text.replace(cbot_name, '')[0:255]
@@ -119,8 +125,8 @@ def start_message(message):
     to_bot = False
     if message.reply_to_message is not None:
         if message.reply_to_message.from_user.username is not None:
-            to_bot = '@'+message.reply_to_message.from_user.username == cbot_name
-    to_bot = (message.text.find(cbot_name) >= 0) | (message.chat.type == 'private') | to_bot
+            to_bot = ('@'+message.reply_to_message.from_user.username == cbot_name)
+    to_bot = (message.text.find(cbot_name) >= 0) | (message.chat.type == 'private') | to_bot | (re.search('Люс[яеию]', message.text) is not None)
 
     #если чат не приватный, то запоминаем id сообщения на которое будем отвечать
     reply_to_message_id = None if message.chat.type == 'private' else message.message_id
