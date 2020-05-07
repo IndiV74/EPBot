@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 import io
 import os
 import re
-from langdetect import detect
+#from langdetect import detect
 #import pprint
 
 cpublic_messages_to_response = 9
