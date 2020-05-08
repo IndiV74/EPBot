@@ -126,7 +126,7 @@ def start_message(message):
     if message.reply_to_message is not None:
         if message.reply_to_message.from_user.username is not None:
             to_bot = ('@'+message.reply_to_message.from_user.username == cbot_name)
-    to_bot = (message.text.find(cbot_name) >= 0) | (message.chat.type == 'private') | to_bot | (re.search('Люс[яеию]', message.text) is not None)
+    to_bot = (message.text.find(cbot_name) >= 0) | (message.chat.type == 'private') | to_bot | (re.search('Люс[еиіюья]', message.text) is not None)
 
     #если чат не приватный, то запоминаем id сообщения на которое будем отвечать
     reply_to_message_id = None if message.chat.type == 'private' else message.message_id
