@@ -72,6 +72,11 @@ def get_bot_response(message):
     null_response = False if response else True
     return (response if response else get_random_message('nothing_to_say')), null_response
 
+def send_message(chat_id, text, reply_to_message_id = 0):
+    while len(text) > 0:
+        bot.send_message(chat_id, text[:4000], reply_to_message_id)
+        text = text[4000:]
+
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -80,7 +85,7 @@ def start_message(message):
     data = load_dictonary_from_GoogleDrive(c_id_data_json, 'data.json')
     dconfig = load_dictonary_from_GoogleDrive(c_id_config_json, 'config.json')
 
-    bot.send_message(message.chat.id, 'Данные перезагружены, можно запрашивать статистику командами\n'
+    send_message(message.chat.id, 'Данные перезагружены, можно запрашивать статистику командами\n'
                                       '/titantotal <маска даты [YYYY-MM-DD]> - урон по титану (сортировка по суммарному урону)\n'
                                       '/titanavg <маска даты [YYYY-MM-DD]> - урон по титану (сортировка по среднему урону)\n'
                                       '/wartotal <маска даты [YYYY-MM-DD>] - очков в войнах (сортировка по сумме очков)\n'
@@ -113,7 +118,7 @@ def start_message(message):
     except:
         res = 'Что-то пошло не так... @IndiV! почини меня... пожалуйста 😜'
 
-    bot.send_message(message.chat.id, res)
+    send_message(message.chat.id, res)
 
 
 @bot.message_handler(content_types=['text'])
@@ -131,12 +136,12 @@ def start_message(message):
     #если чат не приватный, то запоминаем id сообщения на которое будем отвечать
     reply_to_message_id = None if message.chat.type == 'private' else message.message_id
     if to_bot:
-        bot.send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
+        send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
     else:
         msg_count += 1
         # отвечаем на сообщение если превышен лимит ожидания и у бота нашелся ответ
         if msg_count >= cpublic_messages_to_response and not null_response:
-            bot.send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
+            send_message(message.chat.id, text=bot_response, reply_to_message_id=reply_to_message_id)
             if not null_response and not to_bot:
                     msg_count = 0
 

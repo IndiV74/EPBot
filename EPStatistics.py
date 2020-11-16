@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import List, Any, Union
 
 cTitanKilled = 'TitanKilled'
@@ -14,11 +15,31 @@ def statSummary(data, typeObject, regExpMask, sort=cSortTotalPoint):
     actions = data[typeObject]
 
     keys = list(data[typeObject].keys())
-    # фильтруем ключи по маске
-    keyList = list(filter(lambda x: bool(re.search(regExpMask, x)), keys))
-    keyList.sort()
-#    print(keyList)
+    #проверяем маску дат на формат диапазона дат dd.mm.yyyy-dd.mm.yyyy
+    sDate = re.search(r'\d{2}\.\d{2}\.\d{4}-\d{2}\.\d{2}\.\d{4}', regExpMask)
+    if sDate != None:
+        try:
+            begin_date = datetime.strptime(regExpMask[0:10], "%d.%m.%Y")
+            end_date = datetime.strptime(regExpMask[11:21]+' 23:59:59', "%d.%m.%Y %H:%M:%S")
+        except:
+            res = 'Неправильно задан диапазон дат'
+            return res
+        keyList = []
+        for key in keys:
+            key_date = datetime.strptime(key, "%Y-%m-%d %H:%M:%S")
+            if key_date >= begin_date and key_date <= end_date:
+                keyList.append(key)
 
+        keyList.sort()
+    else:
+        # фильтруем ключи по маске
+        keyList = list(filter(lambda x: bool(re.search(regExpMask, x)), keys))
+        keyList.sort()
+    #    print(keyList)
+
+    if len(keyList) == 0:
+        res = f'Не найдено титанов/войн за {regExpMask}'
+        return res
     titanKilledCount = 0
     for objectDate in keyList:
         titanState = actions[objectDate].get('titanState')
