@@ -19,10 +19,8 @@ def statSummary(data, typeObject, regExpMask, sort=cSortTotalPoint):
     sDate = re.search(r'\d{2}\.\d{2}\.\d{4}-\d{2}\.\d{2}\.\d{4}', regExpMask)
     if sDate != None:
         try:
-            print(regExpMask[0:10], regExpMask[10:21])
             begin_date = datetime.strptime(regExpMask[0:10], "%d.%m.%Y")
             end_date = datetime.strptime(regExpMask[11:21]+' 23:59:59', "%d.%m.%Y %H:%M:%S")
-            print (begin_date, end_date)
         except:
             res = 'Неправильно задан диапазон дат'
             return res
