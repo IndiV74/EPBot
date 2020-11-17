@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, date, time
 from typing import List, Any, Union
 
 cTitanKilled = 'TitanKilled'
@@ -19,8 +19,10 @@ def statSummary(data, typeObject, regExpMask, sort=cSortTotalPoint):
     sDate = re.search(r'\d{2}\.\d{2}\.\d{4}-\d{2}\.\d{2}\.\d{4}', regExpMask)
     if sDate != None:
         try:
+            print(regExpMask[0:10], regExpMask[10:21])
             begin_date = datetime.strptime(regExpMask[0:10], "%d.%m.%Y")
             end_date = datetime.strptime(regExpMask[11:21]+' 23:59:59', "%d.%m.%Y %H:%M:%S")
+            print (begin_date, end_date)
         except:
             res = 'Неправильно задан диапазон дат'
             return res
@@ -31,17 +33,25 @@ def statSummary(data, typeObject, regExpMask, sort=cSortTotalPoint):
                 keyList.append(key)
 
         keyList.sort()
-    else:
+    else: # иначе маску обрабатываем как регулярное выражение
         # фильтруем ключи по маске
         keyList = list(filter(lambda x: bool(re.search(regExpMask, x)), keys))
         keyList.sort()
     #    print(keyList)
 
     if len(keyList) == 0:
-        res = f'Не найдено титанов/войн за {regExpMask}'
+        res = f'За {regExpMask} ничего не найдено'
         return res
     titanKilledCount = 0
+    min_date_of_period = datetime.now()
+    max_date_of_period = datetime(1900, 1, 1)
     for objectDate in keyList:
+        # определяем минимальную и максимальную дату найденых объектов
+        key_date = datetime.strptime(objectDate, "%Y-%m-%d %H:%M:%S")
+        if key_date < min_date_of_period:
+            min_date_of_period = key_date
+        if key_date > max_date_of_period:
+            max_date_of_period = key_date
         titanState = actions[objectDate].get('titanState')
         titanKilled = False
         if titanState is not None:
@@ -67,7 +77,7 @@ def statSummary(data, typeObject, regExpMask, sort=cSortTotalPoint):
         targetColumn = 2
 
     maxDamage = sortRes[0][targetColumn]
-    res = f'За {regExpMask} ' if regExpMask != '' else ''
+    res = f'За {min_date_of_period.strftime("%d.%m.%Y")}-{max_date_of_period.strftime("%d.%m.%Y")} ' if regExpMask != '' else ''
     if typeObject == 'titans':
         res += f"убито {titanKilledCount} #титанов из {len(keyList)}\nСуммарный и (средний) урон по убитым титанам\n"
     elif typeObject == 'wars':
