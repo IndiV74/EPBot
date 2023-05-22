@@ -1,6 +1,6 @@
 apiai==1.2.3
 pyTelegramBotAPI==3.6.7
-requests==2.23.0
+requests==2.31.0
 google-api-core==1.17.0
 google-api-python-client==1.8.0
 google-auth==1.14.0
